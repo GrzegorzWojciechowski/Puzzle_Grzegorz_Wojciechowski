@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include "gameinstance.h"
+#include "qpushbutton.h"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -15,6 +16,7 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    void setCurrentGameInstance(GameInstance &instance);
     ~MainWindow();
 
 
@@ -29,7 +31,11 @@ private slots:
 
     void on_resetButton_clicked();
 
+    void changeIcon(int _x, int _y);
+
 private:
     Ui::MainWindow *ui;
+    GameInstance* currentGameInstance;
+    QVector<QVector<QPushButton*>> puzzleButtons;
 };
 #endif // MAINWINDOW_H

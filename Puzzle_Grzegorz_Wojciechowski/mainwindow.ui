@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>469</width>
+    <width>632</width>
     <height>731</height>
    </rect>
   </property>
@@ -17,18 +17,24 @@
    <widget class="QSpinBox" name="numberOfTiles">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>290</y>
+      <x>280</x>
+      <y>590</y>
       <width>42</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="minimum">
+     <number>3</number>
+    </property>
+    <property name="maximum">
+     <number>9</number>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>190</x>
-      <y>290</y>
+      <x>150</x>
+      <y>620</y>
       <width>80</width>
       <height>24</height>
      </rect>
@@ -37,35 +43,13 @@
      <string>PushButton</string>
     </property>
    </widget>
-   <widget class="QWidget" name="gridLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>50</y>
-      <width>201</width>
-      <height>181</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridForButtons"/>
-   </widget>
-   <widget class="QWidget" name="verticalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>320</y>
-      <width>160</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayoutForButtons"/>
-   </widget>
    <widget class="QFrame" name="frameForButtons">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>419</y>
-      <width>271</width>
-      <height>261</height>
+      <x>50</x>
+      <y>20</y>
+      <width>512</width>
+      <height>512</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -78,8 +62,8 @@
    <widget class="QPushButton" name="resetButton">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>460</y>
+      <x>60</x>
+      <y>580</y>
       <width>80</width>
       <height>24</height>
      </rect>
@@ -88,13 +72,36 @@
      <string>resetButton</string>
     </property>
    </widget>
+   <widget class="QSpinBox" name="testSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>630</y>
+      <width>42</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="winCheckBox">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>580</y>
+      <width>78</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CheckBox</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>469</width>
+     <width>632</width>
      <height>21</height>
     </rect>
    </property>

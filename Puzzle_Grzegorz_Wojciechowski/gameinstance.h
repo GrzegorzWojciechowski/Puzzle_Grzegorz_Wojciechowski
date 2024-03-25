@@ -1,10 +1,17 @@
 #ifndef GAMEINSTANCE_H
 #define GAMEINSTANCE_H
-
-class gameinstance
+#include "QString"
+#include "gamemode.h"
+class GameInstance
 {
 public:
-    gameinstance();
+    GameInstance();
+
+    void gameStartFunction(int _numberOfTiles, QString _fileName);
+    GameMode currentGameMode;
+
+private:
+
 };
 
 #endif // GAMEINSTANCE_H
