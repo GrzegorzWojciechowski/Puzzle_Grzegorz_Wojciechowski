@@ -2,13 +2,15 @@
 #define GAMEINSTANCE_H
 #include "QString"
 #include "gamemode.h"
+#include "freegamemode.h"
+#include "timedgamemode.h"
 class GameInstance
 {
 public:
     GameInstance();
 
-    void gameStartFunction(int _numberOfTiles, QString _fileName);
-    GameMode currentGameMode;
+    void gameStartFunction(int _numberOfTiles, QString _fileName, int gameModeType, int _difficulty);
+    GameMode* currentGameMode;
 
 private:
 

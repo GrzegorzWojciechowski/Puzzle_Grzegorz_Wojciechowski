@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "gameinstance.h"
 #include "qpushbutton.h"
+#include "QTimer"
+#include "QLabel"
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -33,9 +35,21 @@ private slots:
 
     void changeIcon(int _x, int _y);
 
+    void updateTimer();
+
+    void winScreen();
+
+    void loseScreen();
+
+    void on_filePickerActivationButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     GameInstance* currentGameInstance;
     QVector<QVector<QPushButton*>> puzzleButtons;
+    QTimer* timer = new QTimer(this);
+    int timerValue=0;
+    int currentNumberOfTiles;
+    QString currentPhotoFile;
 };
 #endif // MAINWINDOW_H

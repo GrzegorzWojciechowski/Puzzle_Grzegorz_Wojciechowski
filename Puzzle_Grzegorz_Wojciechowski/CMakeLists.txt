@@ -27,6 +27,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         gamemode.cpp
         tile.h tile.cpp
         gameinstance.h gameinstance.cpp
+        freegamemode.h freegamemode.cpp
+        timedgamemode.h timedgamemode.cpp
 
 
     )

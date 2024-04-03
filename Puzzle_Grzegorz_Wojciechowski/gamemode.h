@@ -8,24 +8,28 @@ class GameMode
 {
 public:
     GameMode();
-    void startGame(int _numberOfTiles, QString _imageFileName);
+    virtual void startGame(int _numberOfTiles, QString _imageFileName, int _difficulty);
     bool passPushCheck(int _x, int _y);
     int getNewImageCords(int &_x, int &_y, int &_a, int &_b, int &_h, int &_g);
     QIcon **buttonIcons;
+    QIcon **originalIcons;
     Tile **puzzleTiles;
     void switchTiles(int _x, int _y, int _a, int _b);
-    bool checkWinCondition();
-
-private:
+    virtual bool checkWinCondition();
+    virtual bool timeCheck(int time);
+    int getNumberOfTiles();
+    Tile getTile(int x, int y);
+    void mixTheTiles();
+//protected:
     int numberOfTiles;
-
+    int difficulty;
     QPixmap chosenImage;
     QPixmap black;
     QIcon cropImageForButton(int _x, int _y, int _dimension, QPixmap _image);
     int currentWorkedOnXCordStarting;
     int currentWorkedOnYCordStarting;
-    int currentWorkedOnXCord;
-    int currentWorkedOnYCord;
+    int currentEmptyXCord;
+    int currentEmptyYCord;
     int futureEmptyXCord;
     int futureEmptyYCord;
     Tile helper;
