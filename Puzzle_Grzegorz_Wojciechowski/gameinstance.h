@@ -4,6 +4,7 @@
 #include "gamemode.h"
 #include "freegamemode.h"
 #include "timedgamemode.h"
+#include "scoreboard.h"
 class GameInstance
 {
 public:
@@ -11,6 +12,7 @@ public:
 
     void gameStartFunction(int _numberOfTiles, QString _fileName, int gameModeType, int _difficulty);
     GameMode* currentGameMode;
+    ScoreBoard* currentScoreBoard;
 
 private:
 

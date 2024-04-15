@@ -12,7 +12,7 @@ bool TimedGameMode::timeCheck(int time){
     }
 }
 void TimedGameMode::startGame(int _numberOfTiles, QString _imageFileName, int _difficulty){
-    maxTime=_numberOfTiles*3;
+    maxTime=_numberOfTiles*20;
     numberOfTiles = _numberOfTiles;
     difficulty=_difficulty;
     buttonIcons = new QIcon*[_numberOfTiles];
@@ -58,4 +58,8 @@ void TimedGameMode::startGame(int _numberOfTiles, QString _imageFileName, int _d
 
 int TimedGameMode::getMaxTime(){
     return maxTime;
+}
+
+int TimedGameMode::currentScore(int time){
+    return numberOfTiles*100+difficulty*100-time*10;
 }

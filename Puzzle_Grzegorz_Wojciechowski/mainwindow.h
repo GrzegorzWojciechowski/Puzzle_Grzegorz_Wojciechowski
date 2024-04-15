@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     void setCurrentGameInstance(GameInstance &instance);
+    void printScoreBoard();
+    void deleteScoreBoard();
     ~MainWindow();
 
 
@@ -51,5 +53,6 @@ private:
     int timerValue=0;
     int currentNumberOfTiles;
     QString currentPhotoFile;
+    int currentScore;
 };
 #endif // MAINWINDOW_H

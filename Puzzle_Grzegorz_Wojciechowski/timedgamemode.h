@@ -9,6 +9,7 @@ public:
     void startGame(int _numberOfTiles, QString _imageFileName, int _difficulty) override;
     bool timeCheck(int time) override;
     int getMaxTime();
+    int currentScore(int time);
 
 private:
     int maxTime;

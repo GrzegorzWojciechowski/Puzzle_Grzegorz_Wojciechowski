@@ -20,7 +20,7 @@ public:
     int getNumberOfTiles();
     Tile getTile(int x, int y);
     void mixTheTiles();
-//protected:
+protected:
     int numberOfTiles;
     int difficulty;
     QPixmap chosenImage;

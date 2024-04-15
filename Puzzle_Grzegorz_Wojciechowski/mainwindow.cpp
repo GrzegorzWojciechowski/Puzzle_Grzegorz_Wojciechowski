@@ -29,6 +29,7 @@ void MainWindow::setCurrentGameInstance(GameInstance &instance){
     connect(timer, &QTimer::timeout, this, [=](){
         updateTimer();
     });
+    printScoreBoard();
 };
 
 
@@ -55,8 +56,6 @@ void MainWindow::on_pushButton_released()
     else{
         ui->maxTime->setText("__");
     }
-
-
     puzzleButtons.resize(currentNumberOfTiles);
     QVBoxLayout* layout = new QVBoxLayout(ui->frameForButtons);
     for (int i = 0; i < currentNumberOfTiles; ++i) {
@@ -72,8 +71,6 @@ void MainWindow::on_pushButton_released()
             puzzleButtons[i][j]->setIconSize(iconSize);
             connect(puzzleButtons[i][j], &QPushButton::clicked, this, [=](){
                 changeIcon(i,j);
-                //puzzleButtons[i][j]->setIcon(currentGameInstance->currentGameMode.buttonIcons[1][1]);
-                //puzzleButtons[i][j]->setIconSize(iconSize);
             });
 
         }
@@ -125,6 +122,11 @@ void MainWindow::changeIcon(int _x, int _y){
 void MainWindow::updateTimer(){
     timerValue++;
     ui->timerLabel->setText(QString::number(timerValue));
+    if(ui->winCheckBox->isChecked()){
+        if(auto timedGameModeDownCast = dynamic_cast<TimedGameMode*>(currentGameInstance->currentGameMode)){
+            currentScore=timedGameModeDownCast->currentScore(timerValue);
+        }
+    }
     if(ui->winCheckBox->isChecked()&&currentGameInstance->currentGameMode->timeCheck(timerValue)){
         //ui->testSpinBox->setValue(3);
         timer->stop();
@@ -139,7 +141,16 @@ void MainWindow::winScreen(){
             puzzleButtons[i][j]->setIcon(currentGameInstance->currentGameMode->originalIcons[i][j]);
             //disconnect(puzzleButtons[i][j], &QPushButton::clicked, this);
             puzzleButtons[i][j]->blockSignals(true);
-            ui->winLoseLabel->setText("Won");
+
+        }
+    }
+    ui->winLoseLabel->setText("Won");
+    if(ui->winCheckBox->isChecked()){
+        bool inTopFive = currentGameInstance->currentScoreBoard->updateScores(currentScore);
+        if(inTopFive){
+            currentGameInstance->currentScoreBoard->writeScores();
+            deleteScoreBoard();
+            printScoreBoard();
         }
     }
 }
@@ -175,3 +186,18 @@ void MainWindow::on_filePickerActivationButton_clicked()
     }
 }
 
+void MainWindow::printScoreBoard(){
+    QVBoxLayout* layout = new QVBoxLayout(ui->scoreBoardFrame);
+    for(int i=0;i<currentGameInstance->currentScoreBoard->getScoreListSize();i++){
+        QLabel *label = new QLabel(QString::number(currentGameInstance->currentScoreBoard->getScore(i)));
+        layout->addWidget(label);
+    }
+    ui->scoreBoardFrame->setLayout(layout);
+}
+
+void MainWindow::deleteScoreBoard(){
+    QLayout* layout = ui->scoreBoardFrame->layout();
+
+    qDeleteAll(ui->scoreBoardFrame->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly));
+    delete layout;
+}
