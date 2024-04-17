@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "gamemode.h"
 #include "tile.h"
 #include "gameinstance.h"
 #include <QApplication>

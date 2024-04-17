@@ -9,21 +9,31 @@
 #include "QMessageBox"
 
 
-
+/**
+ * @brief MainWindow::MainWindow konstruktor
+ */
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->pushButton->setEnabled(false);
+    ui->resetButton->setEnabled(false);
+    connect(ui->pushButton, &QPushButton::released, this, &MainWindow::on_startButton_released);
 
-    connect(ui->filePickerActivationButton, &QPushButton::clicked, this, &MainWindow::on_filePickerActivationButton_clicked);
 }
-
+/**
+ * @brief MainWindow::~MainWindow destruktor
+ */
 MainWindow::~MainWindow()
 {
+
     delete ui;
 }
-
+/**
+ * @brief MainWindow::setCurrentGameInstance zapisuje odniesienie do obiektu klasy GameInstance
+ * @param instance odniesienie do obiektu klasy GameInstance
+ */
 void MainWindow::setCurrentGameInstance(GameInstance &instance){
     this->currentGameInstance = &instance;
     connect(timer, &QTimer::timeout, this, [=](){
@@ -31,10 +41,11 @@ void MainWindow::setCurrentGameInstance(GameInstance &instance){
     });
     printScoreBoard();
 };
-
-
-
-void MainWindow::on_pushButton_released()
+/**
+ * @brief MainWindow::on_startButton_released funkcja odpowiedziala na rozpoczęcie rozgrywki generuje
+ * pola planszy przypisuje im fukcje oraz ikony wpływa dodatkowo na logikę związaną z UI
+ */
+void MainWindow::on_startButton_released()
 {
     ui->winLoseLabel->setText("");
     int gameModeType;
@@ -42,6 +53,7 @@ void MainWindow::on_pushButton_released()
         gameModeType=1;
     else
         gameModeType=0;
+    ui->winCheckBox->setEnabled(false);
     currentNumberOfTiles = ui->numberOfTiles->value();;
     int buttonSize = 512/currentNumberOfTiles;
     QSize iconSize(buttonSize-4, buttonSize-4);
@@ -77,74 +89,97 @@ void MainWindow::on_pushButton_released()
         layout->addLayout(rowLayout);
     }
     ui->frameForButtons->setLayout(layout);
+    ui->pushButton->setEnabled(false);
+    ui->resetButton->setEnabled(true);
     timer->start(1000);
 }
-
+/**
+ * @brief MainWindow::on_resetButton_clicked resetuje aktualną rozgrywkę niszcząc planszę i resetując liczniki
+ */
 void MainWindow::on_resetButton_clicked()
 {
     QLayout* layout = ui->frameForButtons->layout();
 
     qDeleteAll(ui->frameForButtons->findChildren<QWidget *>(QString(), Qt::FindDirectChildrenOnly));
     delete layout;
-    ui->testSpinBox->setValue(0);
     timer->stop();
     timerValue=0;
     ui->timerLabel->setText(QString::number(timerValue));
+    currentScore=0;
+    ui->currentScoreLabel->setText(QString::number(currentScore));
+    currentGameInstance->deleteGameMode();
+        ui->winCheckBox->setEnabled(true);
+    ui->pushButton->setEnabled(true);
+    ui->resetButton->setEnabled(false);
 }
-
+/**
+ * @brief MainWindow::changeIcon funkcja odpowiedzialna za odczytanie ruchu gracza i jeśli jest to ruch poprwany wywołanie logiki zmiany ikon oraz
+ * położenia obiektów typu tile w tabeli w obiekcie GameMode
+ * @param _x położenie pola w osi X
+ * @param _y położenie pola w osi Y
+ */
 void MainWindow::changeIcon(int _x, int _y){
     bool check = currentGameInstance->currentGameMode->passPushCheck(_x,_y);
     if(check){
-        int a;
-        int b;
-        int c;
-        int d;
-        int _h;
-        int _g;
-        currentGameInstance->currentGameMode->getNewImageCords(a,b,c,d,_h,_g);
+        int currentWorkedOnXCordStarting;
+        int currentWorkedOnYCordStarting;
+        int futureEmptyXCord;
+        int futureEmptyYCord;
+        int currentEmptyXCord;
+        int currentEmptyYCord;
+        QList<int> workingList = currentGameInstance->currentGameMode->getNewImageCords();
+        currentWorkedOnXCordStarting=workingList.at(0);
+        currentWorkedOnYCordStarting=workingList.at(1);
+        futureEmptyXCord=workingList.at(2);
+        futureEmptyYCord=workingList.at(3);
+        currentEmptyXCord=workingList.at(4);
+        currentEmptyYCord=workingList.at(5);
         QPushButton* currentButton = puzzleButtons[_x][_y];
-        currentButton->setIcon(currentGameInstance->currentGameMode->buttonIcons[a][b]);
-        QPushButton* emptyButton = puzzleButtons[_h][_g];
-        emptyButton->setIcon(currentGameInstance->currentGameMode->buttonIcons[c][d]);
-        currentGameInstance->currentGameMode->switchTiles(_x,_y,_h,_g);
+        currentButton->setIcon(currentGameInstance->currentGameMode->buttonIcons[currentWorkedOnXCordStarting][currentWorkedOnYCordStarting]);
+        QPushButton* emptyButton = puzzleButtons[currentEmptyXCord][currentEmptyYCord];
+        emptyButton->setIcon(currentGameInstance->currentGameMode->buttonIcons[futureEmptyXCord][futureEmptyYCord]);
+        currentGameInstance->currentGameMode->switchTiles(_x,_y,currentEmptyXCord,currentEmptyYCord);
         if(currentGameInstance->currentGameMode->checkWinCondition()){
-            //ui->testSpinBox->setValue(1);
+
             timer->stop();
             winScreen();
         }
         else{
-           ui->testSpinBox->setValue(2);
+
         }
-    //puzzleButton[i]->setIcon(currentGameInstance->currentGameMode.buttonIcons[a][b]);
     }
 }
-
+/**
+ * @brief MainWindow::updateTimer odświerza wartości liczników w trakcie gry i w odpowiednich przypadkach sprawdzanie win conditions
+ */
 void MainWindow::updateTimer(){
     timerValue++;
     ui->timerLabel->setText(QString::number(timerValue));
     if(ui->winCheckBox->isChecked()){
         if(auto timedGameModeDownCast = dynamic_cast<TimedGameMode*>(currentGameInstance->currentGameMode)){
             currentScore=timedGameModeDownCast->currentScore(timerValue);
+            ui->currentScoreLabel->setText(QString::number(currentScore));
         }
     }
     if(ui->winCheckBox->isChecked()&&currentGameInstance->currentGameMode->timeCheck(timerValue)){
-        //ui->testSpinBox->setValue(3);
         timer->stop();
         loseScreen();
 
     }
 }
-
+/**
+ * @brief MainWindow::winScreen funckja odpowiedzialna za wyświetlanie ekranu zwycięstwa i wywołanie związanej z wygraną logiki
+ */
 void MainWindow::winScreen(){
     for(int i=0;i<currentNumberOfTiles;i++){
         for(int j=0;j<currentNumberOfTiles;j++){
             puzzleButtons[i][j]->setIcon(currentGameInstance->currentGameMode->originalIcons[i][j]);
-            //disconnect(puzzleButtons[i][j], &QPushButton::clicked, this);
             puzzleButtons[i][j]->blockSignals(true);
 
         }
     }
     ui->winLoseLabel->setText("Won");
+    ui->winCheckBox->setEnabled(true);
     if(ui->winCheckBox->isChecked()){
         bool inTopFive = currentGameInstance->currentScoreBoard->updateScores(currentScore);
         if(inTopFive){
@@ -154,38 +189,42 @@ void MainWindow::winScreen(){
         }
     }
 }
+/**
+ * @brief MainWindow::loseScreen funkcja odpoweidzialna za wyświetlenie ekranu przegranej i wywołanie związanej z wygraną logiki
+ */
 void MainWindow::loseScreen(){
     for(int i=0;i<currentNumberOfTiles;i++){
         for(int j=0;j<currentNumberOfTiles;j++){
             puzzleButtons[i][j]->setIcon(currentGameInstance->currentGameMode->originalIcons[i][j]);
-            //disconnect(puzzleButtons[i][j], &QPushButton::clicked, this);
             puzzleButtons[i][j]->blockSignals(true);
             ui->winLoseLabel->setText("Lost");
         }
     }
+            ui->winCheckBox->setEnabled(true);
 }
-
-
+/**
+ * @brief MainWindow::on_filePickerActivationButton_clicked fukcja odpowiedzialna za wyświetlanie okna wczytywania obrazów
+ */
 void MainWindow::on_filePickerActivationButton_clicked()
 {
     QString ostatniObraz;
     if(!currentPhotoFile.isEmpty()){
         ostatniObraz = currentPhotoFile;
     }
-    disconnect(ui->pushButton, &QPushButton::released, this, &MainWindow::on_pushButton_released);
-    disconnect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::on_resetButton_clicked);
+
     currentPhotoFile = QFileDialog::getOpenFileName(this, tr("Open Image"),"",tr("ImageFiles(*.png)"));
     if(!currentPhotoFile.isEmpty()){
-    connect(ui->pushButton, &QPushButton::released, this, &MainWindow::on_pushButton_released);
-    connect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::on_resetButton_clicked);
+        ui->pushButton->setEnabled(true);
+
     }
     else if(!ostatniObraz.isEmpty()){
         currentPhotoFile = ostatniObraz;
-        connect(ui->pushButton, &QPushButton::released, this, &MainWindow::on_pushButton_released);
-        connect(ui->resetButton, &QPushButton::clicked, this, &MainWindow::on_resetButton_clicked);
+
     }
 }
-
+/**
+ * @brief MainWindow::printScoreBoard wyświetla tabele wyników
+ */
 void MainWindow::printScoreBoard(){
     QVBoxLayout* layout = new QVBoxLayout(ui->scoreBoardFrame);
     for(int i=0;i<currentGameInstance->currentScoreBoard->getScoreListSize();i++){
@@ -194,7 +233,9 @@ void MainWindow::printScoreBoard(){
     }
     ui->scoreBoardFrame->setLayout(layout);
 }
-
+/**
+ * @brief MainWindow::deleteScoreBoard kasuje tabele wyników
+ */
 void MainWindow::deleteScoreBoard(){
     QLayout* layout = ui->scoreBoardFrame->layout();
 

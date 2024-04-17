@@ -40,7 +40,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>PushButton</string>
+     <string>Start Game</string>
     </property>
    </widget>
    <widget class="QFrame" name="frameForButtons">
@@ -62,24 +62,14 @@
    <widget class="QPushButton" name="resetButton">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>640</y>
+      <x>50</x>
+      <y>630</y>
       <width>80</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>resetButton</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="testSpinBox">
-    <property name="geometry">
-     <rect>
-      <x>570</x>
-      <y>490</y>
-      <width>42</width>
-      <height>25</height>
-     </rect>
+     <string>Reset Game</string>
     </property>
    </widget>
    <widget class="QCheckBox" name="winCheckBox">
@@ -87,12 +77,12 @@
      <rect>
       <x>190</x>
       <y>580</y>
-      <width>78</width>
+      <width>91</width>
       <height>22</height>
      </rect>
     </property>
     <property name="text">
-     <string>CheckBox</string>
+     <string>Timed Mode</string>
     </property>
    </widget>
    <widget class="QLabel" name="timerLabel">
@@ -105,14 +95,14 @@
      </rect>
     </property>
     <property name="text">
-     <string>TextLabel</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="winLoseLabel">
     <property name="geometry">
      <rect>
-      <x>440</x>
-      <y>580</y>
+      <x>60</x>
+      <y>550</y>
       <width>63</width>
       <height>20</height>
      </rect>
@@ -138,7 +128,7 @@
     <property name="geometry">
      <rect>
       <x>140</x>
-      <y>640</y>
+      <y>630</y>
       <width>83</width>
       <height>21</height>
      </rect>
@@ -220,7 +210,7 @@
       <x>590</x>
       <y>70</y>
       <width>120</width>
-      <height>281</height>
+      <height>211</height>
      </rect>
     </property>
     <property name="frameShape">
@@ -230,6 +220,32 @@
      <enum>QFrame::Raised</enum>
     </property>
    </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>580</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Current Score:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="currentScoreLabel">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>580</y>
+      <width>49</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>==</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -237,7 +253,7 @@
      <x>0</x>
      <y>0</y>
      <width>779</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

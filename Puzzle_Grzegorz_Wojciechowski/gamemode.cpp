@@ -1,5 +1,25 @@
 #include "gamemode.h"
+/**
+ * @brief GameMode::GameMode konstruktor
+ */
 GameMode::GameMode(){};
+/**
+ * @brief GameMode::~GameMode destruktor, wywołuje również destruktory obiektów Tile z tabeli puzzleTiles
+ */
+GameMode::~GameMode(){
+    for(int i=0; i<numberOfTiles;i++){
+        delete[] puzzleTiles[i];
+    }
+    delete[] puzzleTiles;
+}
+/**
+ * @brief GameMode::startGame funkcja inicjalizująca rozgrywkę bazując na przekazanych danych, tworzy ikony na podstawie
+ * wybranego przez użytkownika obrazka, tworzy tabelę obiektów typu tile odpowiedzialnych za logiczne odzwierciedlenie
+ * stanu rozgrywki i przekazuje im ich startowe/docelowe wartości
+ * @param _numberOfTiles wielkość pola
+ * @param _imageFileName ścieżka do wybranego pliku png który będzie obrazkiem do ułożenia
+ * @param _difficulty poziom trudności
+ */
 void GameMode::startGame(int _numberOfTiles, QString _imageFileName, int _difficulty){
     numberOfTiles = _numberOfTiles;
     difficulty=_difficulty;
@@ -11,7 +31,7 @@ void GameMode::startGame(int _numberOfTiles, QString _imageFileName, int _diffic
     }
     QPixmap image(_imageFileName);
     chosenImage = image;
-    QPixmap blackImage("C:/Users/grzeg/Documents/Qt_C-/black.png");
+    QPixmap blackImage("");
     black = blackImage;
     int dimension = 512/_numberOfTiles-4;
     for(int i=0; i<_numberOfTiles; i++){
@@ -43,7 +63,14 @@ void GameMode::startGame(int _numberOfTiles, QString _imageFileName, int _diffic
         }
     }
 };
-
+/**
+ * @brief GameMode::cropImageForButton funkcja tnąca obrazek na równe kwadraty i zwracająca ten o określonym położeniu
+ * @param _x położenie lewego górnego rogu prostokąt służącego do cropowania w osi X
+ * @param _y położenie lewego górnego rogu prostokąt służącego do cropowania w osi Y
+ * @param _dimension rozmiar prostokąta służącego do cropowania
+ * @param _image wybrany przez użytkownika obrazek
+ * @return wycięta ikona
+ */
 QIcon GameMode::cropImageForButton(int _x, int _y, int _dimension, QPixmap _image){
     QPixmap work;
     QRect crop(_x,_y,_dimension,_dimension);
@@ -52,7 +79,10 @@ QIcon GameMode::cropImageForButton(int _x, int _y, int _dimension, QPixmap _imag
     return icon;
 };
 
-
+/**
+ * @brief GameMode::mixTheTiles fukcja odpowiedzialna za mieszanie pól na początku gry, mieszanie polega na wykonaniu z pozycji ułożonego obrazka
+     * określonej liczby losowych ruchów w celu pomieszania pól
+ */
 void GameMode::mixTheTiles(){
     int moves = numberOfTiles*difficulty*10;
     srand(time(nullptr));
@@ -82,52 +112,59 @@ void GameMode::mixTheTiles(){
     }
 }
 
-
-
-
-
-
-
+/**
+ * @brief GameMode::passPushCheck funkcja odpowiedzialna za sprawdzenie czy kliknięte przez gracza pole znajduje się obok pola pustego
+ * oraz jeśli tak to przypisuje wartości położeni pól do listy workingCords którą później wykorzystujemy
+ * @param _x położenie X guzika klikniętego przez gracza
+ * @param _y położenie Y guzika klikniętego przez gracza
+ * @return jeśłi pole znajduje się obok pola pustego zwraca true jeśli nie false
+ */
 bool GameMode::passPushCheck(int _x, int _y){
 
     int rowOffsets[] = {-1,0,1,0};
     int collOffsets[] = {0,1,0,-1};
-
+    workingCords.clear();
     for(int i=0;i<4;i++){
         int newRow = _x+rowOffsets[i];
         int newColl = _y+collOffsets[i];
         if(newRow>=0 && newRow<numberOfTiles && newColl>=0 && newColl<numberOfTiles){
             if(puzzleTiles[newRow][newColl].checkIfEmpty()){
-                currentWorkedOnXCordStarting=puzzleTiles[newRow][newColl].getStartingXIndex();
-                currentWorkedOnYCordStarting=puzzleTiles[newRow][newColl].getStartingYIndex();
-                currentEmptyXCord=newRow;
-                currentEmptyYCord=newColl;
-                futureEmptyXCord = puzzleTiles[_x][_y].getStartingXIndex();
-                futureEmptyYCord = puzzleTiles[_x][_y].getStartingYIndex();
-
+                workingCords.push_back(puzzleTiles[newRow][newColl].getStartingXIndex());
+                workingCords.push_back(puzzleTiles[newRow][newColl].getStartingYIndex());
+                workingCords.push_back(puzzleTiles[_x][_y].getStartingXIndex());
+                workingCords.push_back(puzzleTiles[_x][_y].getStartingYIndex());
+                workingCords.push_back(newRow);
+                workingCords.push_back(newColl);
                 return true;
             }
         }
     }
     return false;
 };
-
-int  GameMode::getNewImageCords(int &_x, int &_y, int &_a, int &_b, int &_h, int &_g){
-    _x = currentWorkedOnXCordStarting;
-    _y = currentWorkedOnYCordStarting;
-    _a = futureEmptyXCord;
-    _b = futureEmptyYCord;
-    _h = currentEmptyXCord;
-    _g = currentEmptyYCord;
+/**
+ * @brief GameMode::getNewImageCords funkcja zwracająca listę położenia pól i położenia ikon
+ * @return workingCords
+ */
+QList<int>  GameMode::getNewImageCords(){
+    return workingCords;
 };
-
+/**
+ * @brief GameMode::switchTiles funkcja odpowiedzialna za zamiana obiektów Tile w tabeli
+ * @param _x położenie X jednego pola
+ * @param _y położenie Y jednego pola
+ * @param _a położenie X drugiego pola
+ * @param _b położenie Y drugiego pola
+ */
 void GameMode::switchTiles(int _x, int _y, int _a, int _b){
-    helper = puzzleTiles[_x][_y];
+    Tile helper = puzzleTiles[_x][_y];
     puzzleTiles[_x][_y] = puzzleTiles[_a][_b];
     puzzleTiles[_a][_b] = helper;
 
 };
-
+/**
+ * @brief GameMode::checkWinCondition funkcja odpowiedzialna za sprawdzenie czy gracz wygrał grę
+ * @return zwraca true jeśli wszystkie pola są na swojej pozycji i false jeśli którekolwiek nie jest
+ */
 bool GameMode::checkWinCondition(){
     for(int i=0;i<numberOfTiles;i++){
         for(int j=0;j<numberOfTiles;j++){
@@ -141,13 +178,28 @@ bool GameMode::checkWinCondition(){
     }
     return true;
 };
+/**
+ * @brief GameMode::getNumberOfTiles funkcja zwracająca wielkość pola
+ * @return numberOfTiles
+ */
 int GameMode::getNumberOfTiles(){
     return numberOfTiles;
 };
+/**
+ * @brief GameMode::getTile
+ * @param x położenie w tabeli w osi X
+ * @param y położenie w tabeli w osi Y
+ * @return poszukiwany obiekt
+ */
 Tile GameMode::getTile(int x, int y){
     return puzzleTiles[x][y];
 };
-
+/**
+ * @brief GameMode::timeCheck funkcja stworzona do sprawdzania czy upłynął maksymalny czas gry, tu zaimplementowana
+     * aby pokazać możliwości dziedziczenia
+ * @param time aktualny czas rozgrywki
+ * @return false zawsze
+ */
 bool GameMode::timeCheck(int time){
-
+    return false;
 }
